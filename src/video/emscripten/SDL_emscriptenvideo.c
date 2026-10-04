@@ -724,6 +724,17 @@ static SDL_FullscreenResult Emscripten_SetWindowFullscreen(SDL_VideoDevice *_thi
             if ((fullscreen == SDL_FULLSCREEN_OP_ENTER) == fsevent.isFullscreen) {
                 return SDL_FULLSCREEN_SUCCEEDED;  // already there.
             }
+
+            // Only exit fullscreen if our canvas is the fullscreen element.
+            if (fullscreen == SDL_FULLSCREEN_OP_LEAVE) {
+                const char *canvas_id = data->canvas_id;
+                if (*canvas_id == '#') {
+                    canvas_id++;
+                }
+                if (SDL_strcmp(fsevent.id, canvas_id) != 0) {
+                    return SDL_FULLSCREEN_SUCCEEDED;  // already out.
+                }
+            }
         }
 
         if (fullscreen) {
